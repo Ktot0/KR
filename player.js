@@ -79,24 +79,22 @@ function playM3u8(url){
   });
   hls.on(Hls.Events.FRAG_PARSING_METADATA, handleTimedMetadata);
   document.title = url
+  history.replaceState(null, null, window.location.pathname);
 }
 
-chrome.storage.local.get({
-  hlsjs: currentVersion,
-  debug: false,
-  native: false
-}, function(settings) {
-  debug = settings.debug;
-  native = settings.native;
-  var s = document.createElement('script');
-  var version = currentVersion
-  if (supportedVersions.includes(settings.hlsjs)) {
-    version = settings.hlsjs
-  }
-  s.src = chrome.runtime.getURL('hlsjs/hls.'+version+'.min.js');
-  s.onload = function() { playM3u8(window.location.href.split("#")[1]); };
-  (document.head || document.documentElement).appendChild(s);
-});
+var debug = false;
+var native = false;
+var currentVersion = '1.1.5';
+var supportedVersions = ['1.0.0', '1.1.5'];
+
+var s = document.createElement('script');
+var version = currentVersion;
+if (supportedVersions.includes(currentVersion)) {
+  version = currentVersion;
+}
+s.src = 'https://cdn.jsdelivr.net/npm/hls.js@' + version + '/dist/hls.min.js';
+s.onload = function() { playM3u8(window.location.href.split("#")[1]); };
+(document.head || document.documentElement).appendChild(s);
 
 $(window).bind('hashchange', function() {
   playM3u8(window.location.href.split("#")[1]);
